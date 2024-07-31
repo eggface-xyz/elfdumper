@@ -17,3 +17,14 @@ std::vector<uint8_t> readFile(std::string_view filename)
     return content;
 }
 
+std::string join(std::vector<std::string_view> seq, std::string_view del)
+{
+    std::string ret;
+    for (auto iter = seq.cbegin(); iter != seq.cend(); ++iter)
+    {
+        ret += *iter;
+        if (iter != seq.cend() - 1)
+            ret += del;
+    }
+    return ret;
+}
