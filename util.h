@@ -10,6 +10,19 @@
 std::vector<uint8_t> readFile(std::string_view filename);
 std::string join(std::vector<std::string_view> seq, std::string_view del);
 
+class range
+{
+public: 
+    range(std::size_t b, std::size_t l): base(b), length(l) {}
+    bool contains(range& r2)
+    {
+        return base <= r2.base && (base + length) >= (r2.base + r2.length);
+    }
+private:
+    std::size_t base;
+    std::size_t length;
+};
+
 inline std::string_view ElfType2Str(uint16_t e_type)
 {
     switch(e_type)
@@ -182,6 +195,82 @@ inline std::string Shf2str(uint32_t flag)
     if (ret.empty())
         return "Empty flags";
     return join(ret, " | ");
+}
+
+inline std::string_view SymbolType2Str(uint8_t type)
+{
+    switch (type)
+    {
+    case STT_NOTYPE:
+        return "STT_NOTYPE";
+    case STT_OBJECT:
+        return "STT_OBJECT";
+    case STT_FUNC:
+        return "STT_FUNC";
+    case STT_SECTION:
+        return "STT_SECTION";
+    case STT_FILE:
+        return "STT_FILE";
+    default:
+        throw std::runtime_error{"Unknow symbol type " + fmt::format("{:#X}", type)};
+    }
+}
+
+inline std::string_view SymbolBind2Str(uint8_t bind)
+{
+    switch (bind)
+    {
+    case STB_LOCAL:
+        return "STB_LOCAL";
+    case STB_GLOBAL:
+        return "STB_GLOBAL";
+    case STB_WEAK:
+        return "STB_WEAK";
+    default:
+        throw std::runtime_error{"Unknow symbol binding " + fmt::format("{:#X}", bind)};
+    }
+}
+
+inline std::string_view SymbolVis2Str(uint8_t vis)
+{
+    switch (vis)
+    {
+    case STV_DEFAULT:
+        return "STV_DEFAULT";
+    case STV_INTERNAL:
+        return "STV_INTERNAL";
+    case STV_HIDDEN:
+        return "STV_HIDDEN";
+    case STV_PROTECTED:
+        return "STV_PROTECTED";
+    default:
+        throw std::runtime_error{"Unknow symbol vis " + fmt::format("{:#X}", vis)};
+    }
+}
+
+inline std::string_view RelocationType2Str(uint32_t type)
+{
+    switch(type)
+    {
+    case R_X86_64_NONE:
+        return "R_X86_64_NONE";
+    case R_X86_64_64:
+        return "R_X86_64_64";
+    case R_X86_64_PC32:
+        return "R_X86_64_PC32";
+    case R_X86_64_GOT32:
+        return "R_X86_64_GOT32";
+    case R_X86_64_PLT32:
+        return "R_X86_64_PLT32";
+    case R_X86_64_COPY:
+        return "R_X86_64_COPY";
+    case R_X86_64_GLOB_DAT:
+        return "R_X86_64_GLOB_DAT";
+    case R_X86_64_JUMP_SLOT:
+        return "R_X86_64_JUMP_SLOT";
+    default:
+        throw std::runtime_error{"Unknow relocation type " + fmt::format("{:#X}", type)};
+    }
 }
 
 #endif // _UTIL_H
